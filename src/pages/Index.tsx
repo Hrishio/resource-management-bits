@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -13,17 +14,27 @@ import {
   DollarSign,
   Briefcase,
   Calendar,
-  BarChart3
+  BarChart3,
+  LogOut
 } from "lucide-react";
 import { ResourceChart } from "@/components/ResourceChart";
 import { ResourceTable } from "@/components/ResourceTable";
 import { ProjectAssignments } from "@/components/ProjectAssignments";
 import { ResourceForm } from "@/components/ResourceForm";
 import { Sidebar } from "@/components/Sidebar";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showResourceForm, setShowResourceForm] = useState(false);
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
 
   const stats = [
     {
@@ -63,6 +74,21 @@ const Index = () => {
     { name: "Security Audit", status: "Completed", progress: 100, team: 4 }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
@@ -73,12 +99,18 @@ const Index = () => {
             <div className="flex justify-between items-center mb-8">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Resource Management Portal</h1>
-                <p className="text-gray-600 mt-1">Manage and track your organization's project resources</p>
+                <p className="text-gray-600 mt-1">Welcome back, {user.email}</p>
               </div>
-              <Button onClick={() => setShowResourceForm(true)} className="bg-blue-600 hover:bg-blue-700">
-                <PlusCircle className="w-4 h-4 mr-2" />
-                Add Resource
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={() => setShowResourceForm(true)} className="bg-blue-600 hover:bg-blue-700">
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  Add Resource
+                </Button>
+                <Button onClick={signOut} variant="outline">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
             </div>
 
             {activeTab === "dashboard" && (

@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ResourceFormProps {
   onClose: () => void;
@@ -15,6 +17,8 @@ interface ResourceFormProps {
 
 export const ResourceForm = ({ onClose }: ResourceFormProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     type: "",
@@ -24,18 +28,52 @@ export const ResourceForm = ({ onClose }: ResourceFormProps) => {
     description: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Here you would typically send the data to your backend
-    console.log("Form submitted:", formData);
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to add resources.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
     
-    toast({
-      title: "Resource Added Successfully",
-      description: `${formData.name} has been added to your resource pool.`,
-    });
-    
-    onClose();
+    try {
+      const { error } = await supabase
+        .from("resources")
+        .insert({
+          user_id: user.id,
+          name: formData.name,
+          type: formData.type,
+          skills: formData.skills.split(",").map(skill => skill.trim()).filter(Boolean),
+          cost: formData.cost || null,
+          availability: formData.availability || "available",
+          description: formData.description || null
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Resource Added Successfully",
+        description: `${formData.name} has been added to your resource pool.`,
+      });
+      
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add resource. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -132,11 +170,11 @@ export const ResourceForm = ({ onClose }: ResourceFormProps) => {
             </div>
 
             <div className="flex gap-2 justify-end">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                Add Resource
+              <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={loading}>
+                {loading ? "Adding..." : "Add Resource"}
               </Button>
             </div>
           </form>

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,79 +19,81 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-const resources = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    type: "Developer",
-    skills: ["React", "Node.js", "TypeScript"],
-    status: "Available",
-    allocation: 75,
-    project: "Mobile App Redesign",
-    cost: "$85/hr"
-  },
-  {
-    id: 2,
-    name: "Design Workstation",
-    type: "Equipment",
-    skills: ["Adobe Creative Suite", "High-end Graphics"],
-    status: "In Use",
-    allocation: 100,
-    project: "Brand Identity",
-    cost: "$15/day"
-  },
-  {
-    id: 3,
-    name: "Mike Chen",
-    type: "Developer",
-    skills: ["Python", "Django", "AWS"],
-    status: "Available",
-    allocation: 50,
-    project: "Data Platform",
-    cost: "$90/hr"
-  },
-  {
-    id: 4,
-    name: "Conference Room A",
-    type: "Facility",
-    skills: ["Video Conferencing", "20 person capacity"],
-    status: "Available",
-    allocation: 30,
-    project: "Client Meetings",
-    cost: "$25/hr"
-  },
-  {
-    id: 5,
-    name: "Lisa Rodriguez",
-    type: "Designer",
-    skills: ["UI/UX", "Figma", "Prototyping"],
-    status: "Busy",
-    allocation: 90,
-    project: "Mobile App Redesign",
-    cost: "$75/hr"
-  }
-];
+interface Resource {
+  id: string;
+  name: string;
+  type: string;
+  skills: string[] | null;
+  availability: string;
+  cost: string | null;
+  description: string | null;
+  created_at: string;
+}
 
 export const ResourceTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const fetchResources = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("resources")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      setResources(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch resources. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredResources = resources.filter(resource => {
     const matchesSearch = resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         resource.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+                         (resource.skills && resource.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase())));
     const matchesType = selectedType === "All" || resource.type === selectedType;
     return matchesSearch && matchesType;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Available": return "bg-green-100 text-green-800";
-      case "Busy": return "bg-red-100 text-red-800";
-      case "In Use": return "bg-yellow-100 text-yellow-800";
+      case "available": return "bg-green-100 text-green-800";
+      case "busy": return "bg-red-100 text-red-800";
+      case "in-use": return "bg-yellow-100 text-yellow-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -134,8 +136,6 @@ export const ResourceTable = () => {
               <TableHead>Type</TableHead>
               <TableHead>Skills/Features</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Allocation</TableHead>
-              <TableHead>Current Project</TableHead>
               <TableHead>Cost</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -149,7 +149,7 @@ export const ResourceTable = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {resource.skills.map((skill, index) => (
+                    {resource.skills && resource.skills.map((skill, index) => (
                       <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                         {skill}
                       </span>
@@ -157,23 +157,11 @@ export const ResourceTable = () => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge className={getStatusColor(resource.status)}>
-                    {resource.status}
+                  <Badge className={getStatusColor(resource.availability)}>
+                    {resource.availability}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full" 
-                        style={{ width: `${resource.allocation}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm">{resource.allocation}%</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-gray-600">{resource.project}</TableCell>
-                <TableCell className="font-medium">{resource.cost}</TableCell>
+                <TableCell className="font-medium">{resource.cost || "N/A"}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
