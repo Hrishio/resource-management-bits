@@ -6,7 +6,8 @@ import {
   Briefcase, 
   BarChart3,
   Settings,
-  HelpCircle
+  HelpCircle,
+  UserCog
 } from "lucide-react";
 import { useRole } from "@/hooks/useRole";
 
@@ -22,6 +23,7 @@ export const Sidebar = ({ activeTab, setActiveTab }: SidebarProps) => {
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: true },
     { id: "resources", label: "Resources", icon: Users, adminOnly: true },
     { id: "projects", label: "Projects", icon: Briefcase, adminOnly: false },
+    { id: "user-management", label: "User Management", icon: UserCog, adminOnly: true },
     { id: "analytics", label: "Analytics", icon: BarChart3, adminOnly: true },
     { id: "settings", label: "Settings", icon: Settings, adminOnly: true },
     { id: "help", label: "Help", icon: HelpCircle, adminOnly: false }

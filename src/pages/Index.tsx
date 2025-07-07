@@ -24,6 +24,7 @@ import { ResourceForm } from "@/components/ResourceForm";
 import { ProjectForm } from "@/components/ProjectForm";
 import { ResourceAssignment } from "@/components/ResourceAssignment";
 import { Sidebar } from "@/components/Sidebar";
+import { UserManagement } from "@/components/UserManagement";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
 
@@ -215,6 +216,12 @@ const Index = () => {
             {activeTab === "projects" && (
               <div>
                 <ProjectAssignments />
+              </div>
+            )}
+
+            {activeTab === "user-management" && isAdmin && (
+              <div>
+                <UserManagement />
               </div>
             )}
 
