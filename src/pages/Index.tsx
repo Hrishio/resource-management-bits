@@ -22,14 +22,18 @@ import { ResourceTable } from "@/components/ResourceTable";
 import { ProjectAssignments } from "@/components/ProjectAssignments";
 import { ResourceForm } from "@/components/ResourceForm";
 import { ProjectForm } from "@/components/ProjectForm";
+import { ResourceAssignment } from "@/components/ResourceAssignment";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { useRole } from "@/hooks/useRole";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showResourceForm, setShowResourceForm] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
+  const [showResourceAssignment, setShowResourceAssignment] = useState(false);
   const { user, loading, signOut } = useAuth();
+  const { role, loading: roleLoading, isAdmin } = useRole();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +41,13 @@ const Index = () => {
       navigate("/auth");
     }
   }, [user, loading, navigate]);
+
+  // Redirect non-admin users to projects tab
+  useEffect(() => {
+    if (!roleLoading && role === "resource" && activeTab !== "projects") {
+      setActiveTab("projects");
+    }
+  }, [role, roleLoading, activeTab]);
 
   const stats = [
     {
@@ -76,7 +87,7 @@ const Index = () => {
     { name: "Security Audit", status: "Completed", progress: 100, team: 4 }
   ];
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -102,24 +113,33 @@ const Index = () => {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Resource Management Portal</h1>
                 <p className="text-gray-600 mt-1">Welcome back, {user.email}</p>
+                <p className="text-xs text-gray-500 mt-1">Role: {role?.charAt(0).toUpperCase() + role?.slice(1)}</p>
               </div>
               <div className="flex gap-2">
-                <Button onClick={() => setShowResourceForm(true)} className="bg-blue-600 hover:bg-blue-700">
-                  <PlusCircle className="w-4 h-4 mr-2" />
-                  Add Resource
-                </Button>
-                <Button onClick={() => setShowProjectForm(true)} className="bg-green-600 hover:bg-green-700">
-                  <PlusCircle className="w-4 h-4 mr-2" />
-                  Add Project
-                </Button>
+                {isAdmin && (
+                  <>
+                    <Button onClick={() => setShowResourceForm(true)} className="bg-blue-600 hover:bg-blue-700">
+                      <PlusCircle className="w-4 h-4 mr-2" />
+                      Add Resource
+                    </Button>
+                    <Button onClick={() => setShowProjectForm(true)} className="bg-green-600 hover:bg-green-700">
+                      <PlusCircle className="w-4 h-4 mr-2" />
+                      Add Project
+                    </Button>
+                    <Button onClick={() => setShowResourceAssignment(true)} className="bg-purple-600 hover:bg-purple-700">
+                      <Users className="w-4 h-4 mr-2" />
+                      Assign Resources
+                    </Button>
+                  </>
+                )}
                 <Button onClick={signOut} variant="outline">
                   <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
+                  Sign Out ({role})
                 </Button>
               </div>
             </div>
 
-            {activeTab === "dashboard" && (
+            {activeTab === "dashboard" && isAdmin && (
               <div className="space-y-8">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -186,7 +206,7 @@ const Index = () => {
               </div>
             )}
 
-            {activeTab === "resources" && (
+            {activeTab === "resources" && isAdmin && (
               <div>
                 <ResourceTable />
               </div>
@@ -198,7 +218,7 @@ const Index = () => {
               </div>
             )}
 
-            {activeTab === "analytics" && (
+            {activeTab === "analytics" && isAdmin && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
@@ -244,6 +264,10 @@ const Index = () => {
       
       {showProjectForm && (
         <ProjectForm onClose={() => setShowProjectForm(false)} />
+      )}
+      
+      {showResourceAssignment && (
+        <ResourceAssignment onClose={() => setShowResourceAssignment(false)} />
       )}
     </div>
   );

@@ -8,6 +8,7 @@ import {
   Settings,
   HelpCircle
 } from "lucide-react";
+import { useRole } from "@/hooks/useRole";
 
 interface SidebarProps {
   activeTab: string;
@@ -15,20 +16,24 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ activeTab, setActiveTab }: SidebarProps) => {
+  const { isAdmin } = useRole();
+  
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "resources", label: "Resources", icon: Users },
-    { id: "projects", label: "Projects", icon: Briefcase },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
-    { id: "settings", label: "Settings", icon: Settings },
-    { id: "help", label: "Help", icon: HelpCircle }
-  ];
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: true },
+    { id: "resources", label: "Resources", icon: Users, adminOnly: true },
+    { id: "projects", label: "Projects", icon: Briefcase, adminOnly: false },
+    { id: "analytics", label: "Analytics", icon: BarChart3, adminOnly: true },
+    { id: "settings", label: "Settings", icon: Settings, adminOnly: true },
+    { id: "help", label: "Help", icon: HelpCircle, adminOnly: false }
+  ].filter(item => !item.adminOnly || isAdmin);
 
   return (
     <div className="w-64 bg-white shadow-lg h-screen">
       <div className="p-6 border-b">
         <h2 className="text-xl font-bold text-gray-900">ResourceHub</h2>
-        <p className="text-sm text-gray-600 mt-1">Project Management</p>
+        <p className="text-sm text-gray-600 mt-1">
+          {isAdmin ? "Admin Portal" : "Resource Portal"}
+        </p>
       </div>
       
       <nav className="mt-6">
