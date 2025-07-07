@@ -21,12 +21,14 @@ import { ResourceChart } from "@/components/ResourceChart";
 import { ResourceTable } from "@/components/ResourceTable";
 import { ProjectAssignments } from "@/components/ProjectAssignments";
 import { ResourceForm } from "@/components/ResourceForm";
+import { ProjectForm } from "@/components/ProjectForm";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showResourceForm, setShowResourceForm] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -105,6 +107,10 @@ const Index = () => {
                 <Button onClick={() => setShowResourceForm(true)} className="bg-blue-600 hover:bg-blue-700">
                   <PlusCircle className="w-4 h-4 mr-2" />
                   Add Resource
+                </Button>
+                <Button onClick={() => setShowProjectForm(true)} className="bg-green-600 hover:bg-green-700">
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  Add Project
                 </Button>
                 <Button onClick={signOut} variant="outline">
                   <LogOut className="w-4 h-4 mr-2" />
@@ -234,6 +240,10 @@ const Index = () => {
 
       {showResourceForm && (
         <ResourceForm onClose={() => setShowResourceForm(false)} />
+      )}
+      
+      {showProjectForm && (
+        <ProjectForm onClose={() => setShowProjectForm(false)} />
       )}
     </div>
   );
