@@ -25,8 +25,8 @@ export const UserManagement = () => {
     try {
       setLoading(true);
       
-      // Fetch all profiles
-      const { data: profiles, error: profilesError } = await supabase
+      // Fetch all profiles first
+      const { data: allProfiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
@@ -34,15 +34,15 @@ export const UserManagement = () => {
       if (profilesError) throw profilesError;
 
       // Fetch all user roles
-      const { data: roles, error: rolesError } = await supabase
+      const { data: userRoles, error: rolesError } = await supabase
         .from("user_roles")
         .select("user_id, role");
 
       if (rolesError) throw rolesError;
 
-      // Combine profiles with roles
-      const usersWithRoles = profiles?.map(profile => {
-        const userRole = roles?.find(role => role.user_id === profile.id);
+      // Combine profiles with their roles
+      const usersWithRoles = allProfiles?.map(profile => {
+        const userRole = userRoles?.find(role => role.user_id === profile.id);
         return {
           ...profile,
           role: userRole?.role || "No role assigned"
