@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
   Users, 
-  Settings, 
-  PlusCircle, 
+  SettingsIcon, 
+  PlusCircle,
   TrendingUp, 
   DollarSign,
   Briefcase,
@@ -25,6 +25,8 @@ import { ProjectForm } from "@/components/ProjectForm";
 import { ResourceAssignment } from "@/components/ResourceAssignment";
 import { Sidebar } from "@/components/Sidebar";
 import { UserManagement } from "@/components/UserManagement";
+import { Settings } from "@/components/Settings";
+import { Help } from "@/components/Help";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
 
@@ -259,6 +261,18 @@ const Index = () => {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            )}
+
+            {activeTab === "settings" && isAdmin && (
+              <div>
+                <Settings />
+              </div>
+            )}
+
+            {activeTab === "help" && (
+              <div>
+                <Help />
               </div>
             )}
           </div>
