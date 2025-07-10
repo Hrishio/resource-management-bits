@@ -90,9 +90,9 @@ export const Help = () => {
         .insert({
           user_id: user?.id,
           full_name: formData.fullName,
-          project_id: formData.projectId || null,
+          project_id: formData.projectId === "none" ? null : formData.projectId || null,
           problem_description: formData.problemDescription,
-          manager_id: formData.managerId || null
+          manager_id: formData.managerId === "none" ? null : formData.managerId || null
         });
 
       if (error) throw error;
@@ -158,7 +158,7 @@ export const Help = () => {
                       <SelectValue placeholder="Select a project (if applicable)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No specific project</SelectItem>
+                      <SelectItem value="none">No specific project</SelectItem>
                       {projects.map((project) => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}
@@ -187,7 +187,7 @@ export const Help = () => {
                       <SelectValue placeholder="Select a manager to notify" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No specific manager</SelectItem>
+                      <SelectItem value="none">No specific manager</SelectItem>
                       {managers.map((manager) => (
                         <SelectItem key={manager.id} value={manager.id}>
                           {manager.full_name} ({manager.email})
