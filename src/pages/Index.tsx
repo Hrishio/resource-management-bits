@@ -264,7 +264,7 @@ const Index = () => {
               </div>
             )}
 
-            {activeTab === "settings" && isAdmin && (
+            {activeTab === "settings" && (
               <div>
                 <Settings />
               </div>

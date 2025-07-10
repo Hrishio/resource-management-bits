@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Users, DollarSign, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useRole } from "@/hooks/useRole";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,20 +32,55 @@ export const ProjectAssignments = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { isAdmin } = useRole();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [isAdmin, user]);
 
   const fetchProjects = async () => {
     try {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false });
+      if (isAdmin) {
+        // Admins can see all projects
+        const { data, error } = await supabase
+          .from("projects")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setProjects(data || []);
+        if (error) throw error;
+        setProjects(data || []);
+      } else if (user) {
+        // Resource users only see projects they are assigned to
+        // First, get the resource record for this user
+        const { data: resource, error: resourceError } = await supabase
+          .from("resources")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (resourceError) throw resourceError;
+
+        if (resource) {
+          // Get projects assigned to this resource
+          const { data: projectAssignments, error: assignmentError } = await supabase
+            .from("project_resources")
+            .select(`
+              project_id,
+              projects (*)
+            `)
+            .eq("resource_id", resource.id);
+
+          if (assignmentError) throw assignmentError;
+
+          // Extract projects from the assignments
+          const assignedProjects = projectAssignments?.map(assignment => assignment.projects).filter(Boolean) || [];
+          setProjects(assignedProjects);
+        } else {
+          // No resource record found, show empty
+          setProjects([]);
+        }
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -124,26 +161,28 @@ export const ProjectAssignments = () => {
                       {project.status}
                     </Badge>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        className="text-red-600"
-                        onClick={() => deleteProject(project.id)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {isAdmin && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="text-red-600"
+                          onClick={() => deleteProject(project.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
               </CardHeader>
               
