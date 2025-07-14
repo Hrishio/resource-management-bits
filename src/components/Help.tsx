@@ -122,39 +122,40 @@ export const Help = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Help & Support</h2>
-        <p className="text-gray-600">Get help with your questions and report issues</p>
+        <h2 className="text-xl lg:text-2xl font-bold text-foreground">Help & Support</h2>
+        <p className="text-muted-foreground text-sm lg:text-base">Get help with your questions and report issues</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Contact Form */}
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <HelpCircle className="w-5 h-5 mr-2" />
+              <CardTitle className="flex items-center text-base lg:text-lg">
+                <HelpCircle className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
                 Contact Support
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={submitTicket} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
+                  <Label htmlFor="fullName" className="text-sm lg:text-base">Full Name</Label>
                   <Input
                     id="fullName"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="Enter your full name"
                     required
+                    className="text-sm lg:text-base"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="project">Project (Optional)</Label>
+                  <Label htmlFor="project" className="text-sm lg:text-base">Project (Optional)</Label>
                   <Select value={formData.projectId} onValueChange={(value) => setFormData({ ...formData, projectId: value })}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm lg:text-base">
                       <SelectValue placeholder="Select a project (if applicable)" />
                     </SelectTrigger>
                     <SelectContent>
@@ -169,7 +170,7 @@ export const Help = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="problem">Problem Description</Label>
+                  <Label htmlFor="problem" className="text-sm lg:text-base">Problem Description</Label>
                   <Textarea
                     id="problem"
                     value={formData.problemDescription}
@@ -177,13 +178,14 @@ export const Help = () => {
                     placeholder="Describe the problem you're facing..."
                     rows={4}
                     required
+                    className="text-sm lg:text-base"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="manager">Tag Manager (Optional)</Label>
+                  <Label htmlFor="manager" className="text-sm lg:text-base">Tag Manager (Optional)</Label>
                   <Select value={formData.managerId} onValueChange={(value) => setFormData({ ...formData, managerId: value })}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm lg:text-base">
                       <SelectValue placeholder="Select a manager to notify" />
                     </SelectTrigger>
                     <SelectContent>
@@ -197,7 +199,7 @@ export const Help = () => {
                   </Select>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full">
+                <Button type="submit" disabled={loading} className="w-full text-sm lg:text-base">
                   {loading ? (
                     "Submitting..."
                   ) : (
@@ -213,24 +215,24 @@ export const Help = () => {
         </div>
 
         {/* Quick Help */}
-        <div className="space-y-6">
+        <div className="space-y-4 lg:space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Quick Contact</CardTitle>
+              <CardTitle className="text-base lg:text-lg">Quick Contact</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 lg:space-y-4">
               <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-blue-600" />
+                <Phone className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
                 <div>
-                  <p className="font-medium">Phone Support</p>
-                  <p className="text-sm text-gray-600">+1 (555) 123-4567</p>
+                  <p className="font-medium text-sm lg:text-base">Phone Support</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">+1 (555) 123-4567</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-blue-600" />
+                <Mail className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
                 <div>
-                  <p className="font-medium">Email Support</p>
-                  <p className="text-sm text-gray-600">support@company.com</p>
+                  <p className="font-medium text-sm lg:text-base">Email Support</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground">support@company.com</p>
                 </div>
               </div>
             </CardContent>
@@ -238,18 +240,18 @@ export const Help = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Documentation</CardTitle>
+              <CardTitle className="text-base lg:text-lg">Documentation</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
+              <Button variant="outline" className="w-full justify-start text-xs lg:text-sm">
                 <FileText className="w-4 h-4 mr-2" />
                 User Guide
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button variant="outline" className="w-full justify-start text-xs lg:text-sm">
                 <FileText className="w-4 h-4 mr-2" />
                 FAQ
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button variant="outline" className="w-full justify-start text-xs lg:text-sm">
                 <FileText className="w-4 h-4 mr-2" />
                 Video Tutorials
               </Button>

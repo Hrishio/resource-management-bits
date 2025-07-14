@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Settings as SettingsIcon, User, Bell, Shield, Database } from "lucide-react";
+import { User, Bell, Shield, Database } from "lucide-react";
 
 export const Settings = () => {
   const { user } = useAuth();
@@ -54,58 +54,60 @@ export const Settings = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-        <p className="text-gray-600">Manage your account settings and preferences</p>
+        <h2 className="text-xl lg:text-2xl font-bold text-foreground">Settings</h2>
+        <p className="text-muted-foreground text-sm lg:text-base">Manage your account settings and preferences</p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="w-4 h-4" />
-            Profile
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1">
+          <TabsTrigger value="profile" className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm">
+            <User className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Profile</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell className="w-4 h-4" />
-            Notifications
+          <TabsTrigger value="notifications" className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm">
+            <Bell className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Notifications</span>
           </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2">
-            <Shield className="w-4 h-4" />
-            Security
+          <TabsTrigger value="security" className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm">
+            <Shield className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Security</span>
           </TabsTrigger>
-          <TabsTrigger value="system" className="flex items-center gap-2">
-            <Database className="w-4 h-4" />
-            System
+          <TabsTrigger value="system" className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm">
+            <Database className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">System</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
+              <CardTitle className="text-base lg:text-lg">Profile Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="fullName" className="text-sm lg:text-base">Full Name</Label>
                 <Input
                   id="fullName"
                   value={profileData.fullName}
                   onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
                   placeholder="Enter your full name"
+                  className="text-sm lg:text-base"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-sm lg:text-base">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={profileData.email}
                   onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                   placeholder="Enter your email"
+                  className="text-sm lg:text-base"
                 />
               </div>
-              <Button onClick={updateProfile} disabled={loading}>
+              <Button onClick={updateProfile} disabled={loading} className="text-sm lg:text-base">
                 {loading ? "Updating..." : "Update Profile"}
               </Button>
             </CardContent>
@@ -115,13 +117,13 @@ export const Settings = () => {
         <TabsContent value="notifications" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Notification Preferences</CardTitle>
+              <CardTitle className="text-base lg:text-lg">Notification Preferences</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Email Notifications</Label>
-                  <p className="text-sm text-gray-600">Receive updates via email</p>
+                  <Label className="text-sm lg:text-base">Email Notifications</Label>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Receive updates via email</p>
                 </div>
                 <Switch
                   checked={notifications.emailNotifications}
@@ -132,8 +134,8 @@ export const Settings = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Push Notifications</Label>
-                  <p className="text-sm text-gray-600">Receive browser notifications</p>
+                  <Label className="text-sm lg:text-base">Push Notifications</Label>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Receive browser notifications</p>
                 </div>
                 <Switch
                   checked={notifications.pushNotifications}
@@ -144,8 +146,8 @@ export const Settings = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Project Updates</Label>
-                  <p className="text-sm text-gray-600">Get notified about project changes</p>
+                  <Label className="text-sm lg:text-base">Project Updates</Label>
+                  <p className="text-xs lg:text-sm text-muted-foreground">Get notified about project changes</p>
                 </div>
                 <Switch
                   checked={notifications.projectUpdates}
@@ -161,20 +163,20 @@ export const Settings = () => {
         <TabsContent value="security" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Security Settings</CardTitle>
+              <CardTitle className="text-base lg:text-lg">Security Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Change Password</Label>
-                <Button variant="outline">Update Password</Button>
+                <Label className="text-sm lg:text-base">Change Password</Label>
+                <Button variant="outline" className="text-sm lg:text-base">Update Password</Button>
               </div>
               <div className="space-y-2">
-                <Label>Two-Factor Authentication</Label>
-                <Button variant="outline">Enable 2FA</Button>
+                <Label className="text-sm lg:text-base">Two-Factor Authentication</Label>
+                <Button variant="outline" className="text-sm lg:text-base">Enable 2FA</Button>
               </div>
               <div className="space-y-2">
-                <Label>Active Sessions</Label>
-                <Button variant="outline">Manage Sessions</Button>
+                <Label className="text-sm lg:text-base">Active Sessions</Label>
+                <Button variant="outline" className="text-sm lg:text-base">Manage Sessions</Button>
               </div>
             </CardContent>
           </Card>
@@ -183,25 +185,25 @@ export const Settings = () => {
         <TabsContent value="system" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>System Information</CardTitle>
+              <CardTitle className="text-base lg:text-lg">System Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label>App Version</Label>
-                  <p className="text-sm text-gray-600">v1.0.0</p>
+                  <Label className="text-sm lg:text-base">App Version</Label>
+                  <p className="text-xs lg:text-sm text-muted-foreground">v1.0.0</p>
                 </div>
                 <div>
-                  <Label>Database Status</Label>
-                  <p className="text-sm text-green-600">Connected</p>
+                  <Label className="text-sm lg:text-base">Database Status</Label>
+                  <p className="text-xs lg:text-sm text-green-600">Connected</p>
                 </div>
                 <div>
-                  <Label>Last Backup</Label>
-                  <p className="text-sm text-gray-600">2 hours ago</p>
+                  <Label className="text-sm lg:text-base">Last Backup</Label>
+                  <p className="text-xs lg:text-sm text-muted-foreground">2 hours ago</p>
                 </div>
                 <div>
-                  <Label>Storage Used</Label>
-                  <p className="text-sm text-gray-600">45% of 1GB</p>
+                  <Label className="text-sm lg:text-base">Storage Used</Label>
+                  <p className="text-xs lg:text-sm text-muted-foreground">45% of 1GB</p>
                 </div>
               </div>
             </CardContent>

@@ -131,7 +131,7 @@ export const ProjectAssignments = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -139,24 +139,24 @@ export const ProjectAssignments = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Project Management</h2>
+        <h2 className="text-xl lg:text-2xl font-bold text-foreground">Project Management</h2>
       </div>
 
       {projects.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">No projects found</p>
-          <p className="text-sm text-gray-400">Create your first project to get started</p>
+          <p className="text-muted-foreground mb-4">No projects found</p>
+          <p className="text-sm text-muted-foreground/80">Create your first project to get started</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {projects.map((project) => (
             <Card key={project.id} className="hover:shadow-lg transition-shadow duration-200">
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg mb-2">{project.name}</CardTitle>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-base lg:text-lg mb-2 truncate">{project.name}</CardTitle>
                     <Badge className={getStatusColor(project.status)}>
                       {project.status}
                     </Badge>
@@ -164,7 +164,7 @@ export const ProjectAssignments = () => {
                   {isAdmin && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <MoreHorizontal className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -186,34 +186,34 @@ export const ProjectAssignments = () => {
                 </div>
               </CardHeader>
               
-              <CardContent className="space-y-4">
-                <p className="text-sm text-gray-600 line-clamp-2">
+              <CardContent className="space-y-3 lg:space-y-4">
+                <p className="text-xs lg:text-sm text-muted-foreground line-clamp-2">
                   {project.description || "No description provided"}
                 </p>
                 
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Progress</span>
+                  <div className="flex items-center justify-between text-xs lg:text-sm">
+                    <span className="text-muted-foreground">Progress</span>
                     <span className="font-medium">{project.progress}%</span>
                   </div>
-                  <Progress value={project.progress} className="h-2" />
+                  <Progress value={project.progress} className="h-1.5 lg:h-2" />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-xs lg:text-sm">
                   <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-gray-400" />
-                    <span>{project.budget || "No budget"}</span>
+                    <DollarSign className="w-3 h-3 lg:w-4 lg:h-4 text-muted-foreground" />
+                    <span className="truncate">{project.budget || "No budget"}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-gray-400" />
+                    <Users className="w-3 h-3 lg:w-4 lg:h-4 text-muted-foreground" />
                     <span>{project.team_size} members</span>
                   </div>
                 </div>
                 
                 {(project.start_date || project.end_date) && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar className="w-4 h-4" />
-                    <span>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar className="w-3 h-3 lg:w-4 lg:h-4" />
+                    <span className="truncate">
                       {project.start_date || "No start"} - {project.end_date || "No end"}
                     </span>
                   </div>
